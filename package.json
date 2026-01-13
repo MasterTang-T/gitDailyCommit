@@ -1,7 +1,8 @@
 {
 	"name": "gitlog-mate",
 	"version": "1.0.0",
-	"description": "Git 日志助手 - 帮助开发者从多个本地 Git 仓库获取提交日志，生成日报/周报",
+	"description": "GitLog Mate - Helps developers fetch commit logs from multiple local Git repositories and generate daily/weekly reports",
+	"author": "GitLog Mate Team",
 	"main": "dist-electron/main.js",
 	"scripts": {
 		"dev": "vite",

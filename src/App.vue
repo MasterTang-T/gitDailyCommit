@@ -109,6 +109,7 @@ onMounted(async () => {
   padding: 20px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .horizontal .sidebar-panel {
