@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-electron
+release
+*.log
+.DS_Store
+nul
+tmpclaude-*
+
+# Claude Code
+.claude/
+.claude_code_history
