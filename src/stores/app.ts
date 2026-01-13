@@ -43,10 +43,19 @@ export const useAppStore = defineStore('app', () => {
 
 	// 保存配置
 	async function saveConfig() {
-		await window.electronAPI.saveConfig({
-			projects: projects.value,
-			layoutMode: layoutMode.value
+		// 将响应式对象转换为普通对象，避免 IPC 克隆错误
+		const plainProjects = JSON.parse(JSON.stringify(projects.value))
+		const plainLayoutMode = layoutMode.value
+
+		console.log('[Store] Saving config...', {
+			projects: plainProjects,
+			layoutMode: plainLayoutMode
 		})
+		const result = await window.electronAPI.saveConfig({
+			projects: plainProjects,
+			layoutMode: plainLayoutMode
+		})
+		console.log('[Store] Save config result:', result)
 	}
 
 	// 验证所有项目路径
@@ -132,17 +141,20 @@ export const useAppStore = defineStore('app', () => {
 	async function fetchLogs(startDate: string, endDate: string) {
 		loading.value = true
 		try {
-			// 构建项目信息数组（使用自定义名称）
+			// 构建项目信息数组（使用自定义名称）- 确保是普通对象
 			const projectInfos: ProjectInfo[] = selectedProjects.value
 				.filter(p => p.isValid !== false)
 				.map(p => ({ path: p.path, name: p.name }))
 
-			if (projectInfos.length === 0) {
+			// 转换为普通对象避免 IPC 克隆问题
+			const plainProjectInfos = JSON.parse(JSON.stringify(projectInfos))
+
+			if (plainProjectInfos.length === 0) {
 				logs.value = []
 				return
 			}
 
-			const result = await window.electronAPI.getLogs(projectInfos, startDate, endDate)
+			const result = await window.electronAPI.getLogs(plainProjectInfos, startDate, endDate)
 			if (result.success) {
 				logs.value = result.logs
 			}
