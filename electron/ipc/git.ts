@@ -81,7 +81,8 @@ export function setupGitHandlers() {
 				// --after/--before: 日期范围 (after >= startDate, before <= endDate 当天结束)
 				// 为了包含今天，需要将 endDate 加一天作为 before 的参数
 				// 或者使用 --since 和 --until 配合时间
-				const cmd = `git log --no-merges --after="${startDate} 00:00:00" --before="${endDate} 23:59:59" --pretty=format:"%s|||%ad" --date=format:"%Y-%m-%d %H:%M"`
+				// 使用 %B 获取完整的提交信息，使用特殊分隔符避免内容冲突
+				const cmd = `git log --no-merges --after="${startDate} 00:00:00" --before="${endDate} 23:59:59" --pretty=format:"%B|||%ad^^^^^" --date=format:"%Y-%m-%d %H:%M"`
 
 				try {
 					const output = execSync(cmd, {
@@ -92,15 +93,23 @@ export function setupGitHandlers() {
 
 					// 解析输出
 					if (output && output.trim()) {
-						const lines = output.trim().split('\n')
-						for (const line of lines) {
-							const parts = line.split('|||')
-							if (parts.length === 2) {
-								allLogs.push({
-									projectName,
-									message: parts[0].trim(),
-									date: parts[1].trim()
-								})
+						const records = output.split('^^^^^')
+						for (const record of records) {
+							if (!record.trim()) continue
+
+							// 分离消息和日期
+							const lastSeparatorIndex = record.lastIndexOf('|||')
+							if (lastSeparatorIndex !== -1) {
+								const message = record.substring(0, lastSeparatorIndex).trim()
+								const date = record.substring(lastSeparatorIndex + 3).trim()
+
+								if (message && date) {
+									allLogs.push({
+										projectName,
+										message,
+										date
+									})
+								}
 							}
 						}
 					}
