@@ -43,6 +43,17 @@
       生成日志
     </a-button>
 
+    <a-button
+      class="batch-update-btn"
+      :loading="store.loading"
+      :disabled="store.selectedProjectIds.size === 0"
+      @click="handleBatchUpdate"
+      style="margin-top: 8px; width: 100%"
+    >
+      <template #icon><CloudSyncOutlined /></template>
+      批量更新
+    </a-button>
+
     <div class="selected-info" v-if="store.selectedProjectIds.size > 0">
       已选择 {{ store.selectedProjectIds.size }} 个项目
     </div>
@@ -52,7 +63,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { message } from 'ant-design-vue'
-import { FileTextOutlined } from '@ant-design/icons-vue'
+import { FileTextOutlined, CloudSyncOutlined } from '@ant-design/icons-vue'
 import dayjs, { Dayjs } from 'dayjs'
 import { useAppStore } from '@/stores/app'
 
@@ -103,6 +114,31 @@ async function handleGenerate() {
     message.info('所选日期范围内没有找到提交记录')
   } else {
     message.success(`成功获取 ${store.logs.length} 条提交记录`)
+  }
+}
+
+// 批量更新
+async function handleBatchUpdate() {
+  if (store.selectedProjectIds.size === 0) {
+    message.warning('请先选择至少一个项目')
+    return
+  }
+
+  const result = await store.batchUpdateRepositories()
+  if (result && result.success) {
+    const successCount = result.results.filter(r => r.success).length
+    const failCount = result.results.length - successCount
+
+    if (failCount === 0) {
+      message.success(`成功更新 ${successCount} 个仓库`)
+    } else {
+      message.warning(`完成更新：${successCount} 成功，${failCount} 失败`)
+      // 可以考虑显示具体的失败信息，或者在界面上展示
+      // 这里简单处理，如果有失败的，打印到控制台
+      console.warn('Batch update failures:', result.results.filter(r => !r.success))
+    }
+  } else {
+    message.error('批量更新操作失败')
   }
 }
 </script>

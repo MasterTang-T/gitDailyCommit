@@ -128,4 +128,48 @@ export function setupGitHandlers() {
 			errors: errors.length > 0 ? errors : null
 		}
 	})
+
+	/**
+	 * 批量更新仓库
+	 */
+	ipcMain.handle('git:batchUpdate', async (_event, paths: string[]) => {
+		const results: { path: string; success: boolean; message: string }[] = []
+
+		for (const repoPath of paths) {
+			try {
+				if (!existsSync(repoPath)) {
+					results.push({ path: repoPath, success: false, message: '路径不存在' })
+					continue
+				}
+
+				const gitPath = join(repoPath, '.git')
+				if (!existsSync(gitPath)) {
+					results.push({ path: repoPath, success: false, message: '不是有效的 Git 仓库' })
+					continue
+				}
+
+				try {
+					execSync('git pull', {
+						cwd: repoPath,
+						encoding: 'utf-8',
+						stdio: ['ignore', 'pipe', 'pipe']
+					})
+					results.push({ path: repoPath, success: true, message: '更新成功' })
+				} catch (gitError: any) {
+					results.push({
+						path: repoPath,
+						success: false,
+						message: gitError.message ? gitError.message.split('\n')[0] : 'Git pull 失败'
+					})
+				}
+			} catch (error: any) {
+				results.push({ path: repoPath, success: false, message: error.message })
+			}
+		}
+
+		return {
+			success: true,
+			results
+		}
+	})
 }

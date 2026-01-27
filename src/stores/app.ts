@@ -168,6 +168,24 @@ export const useAppStore = defineStore('app', () => {
 		logs.value = []
 	}
 
+	// 批量更新仓库
+	async function batchUpdateRepositories() {
+		if (selectedProjectIds.value.size === 0) return
+
+		loading.value = true
+		try {
+			const validProjects = selectedProjects.value.filter(p => p.isValid !== false)
+			if (validProjects.length === 0) return
+
+			const paths = validProjects.map(p => p.path)
+			const result = await window.electronAPI.batchUpdate(paths)
+
+			return result
+		} finally {
+			loading.value = false
+		}
+	}
+
 	return {
 		// 状态
 		projects,
@@ -190,6 +208,7 @@ export const useAppStore = defineStore('app', () => {
 		toggleLayout,
 		fetchLogs,
 		clearLogs,
-		validateAllPaths
+		validateAllPaths,
+		batchUpdateRepositories
 	}
 })

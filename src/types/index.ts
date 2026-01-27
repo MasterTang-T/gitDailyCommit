@@ -73,6 +73,10 @@ export interface ElectronAPI {
 	}>
 	validatePath: (path: string) => Promise<{ success: boolean; isValid: boolean }>
 	getProjectName: (path: string) => Promise<{ success: boolean; name?: string }>
+	batchUpdate: (paths: string[]) => Promise<{
+		success: boolean
+		results: { path: string; success: boolean; message: string }[]
+	}>
 }
 
 // 扩展 Window 接口

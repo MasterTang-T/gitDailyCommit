@@ -27,5 +27,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	validatePath: (path: string) => ipcRenderer.invoke('git:validatePath', path),
 
 	// 获取项目名称
-	getProjectName: (path: string) => ipcRenderer.invoke('git:getProjectName', path)
+	getProjectName: (path: string) => ipcRenderer.invoke('git:getProjectName', path),
+
+	// 批量更新
+	batchUpdate: (paths: string[]) => ipcRenderer.invoke('git:batchUpdate', paths)
 })
