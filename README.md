@@ -131,4 +131,4 @@ npm run build:exe
 
 ## 📄 许可证 | License
 
-[MIT](./LICENSE) License © 2024 GitLog Mate Team
+[MIT](./LICENSE) License © 2026 GitLog Mate Team
