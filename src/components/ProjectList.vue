@@ -34,6 +34,12 @@
         </div>
 
         <div class="project-actions">
+          <a-tooltip title="在终端中打开">
+            <a-button type="text" size="small" @click.stop="handleOpenInTerminal(project)">
+              <CodeOutlined />
+            </a-button>
+          </a-tooltip>
+
           <a-tooltip title="编辑">
             <a-button type="text" size="small" @click.stop="handleEditProject(project)">
               <EditOutlined />
@@ -79,7 +85,8 @@ import {
   PushpinOutlined,
   PushpinFilled,
   FolderOpenOutlined,
-  WarningFilled
+  WarningFilled,
+  CodeOutlined
 } from '@ant-design/icons-vue'
 import { useAppStore } from '@/stores/app'
 import type { Project } from '@/types'
@@ -130,6 +137,18 @@ async function handleSaveProject(data: { name: string; path: string; id?: string
 // 全选/取消全选
 function handleSelectAll() {
   store.toggleSelectAll()
+}
+
+// 在终端中打开项目目录
+async function handleOpenInTerminal(project: Project) {
+  try {
+    const result = await (window as any).electronAPI.openInTerminal(project.path)
+    if (result && !result.success) {
+      message.error(`打开终端失败: ${result.error}`)
+    }
+  } catch (error: any) {
+    message.error(`唤起终端发生异常: ${error.message || error}`)
+  }
 }
 </script>
 

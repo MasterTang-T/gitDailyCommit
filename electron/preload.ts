@@ -30,5 +30,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	getProjectName: (path: string) => ipcRenderer.invoke('git:getProjectName', path),
 
 	// 批量更新
-	batchUpdate: (paths: string[]) => ipcRenderer.invoke('git:batchUpdate', paths)
+	batchUpdate: (paths: string[]) => ipcRenderer.invoke('git:batchUpdate', paths),
+
+	// 以终端打开路径
+	openInTerminal: (path: string) => ipcRenderer.invoke('shell:openInTerminal', path)
 })

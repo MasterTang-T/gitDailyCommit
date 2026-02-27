@@ -3,6 +3,7 @@ import { join } from 'path'
 import { setupConfigHandlers } from './ipc/config'
 import { setupGitHandlers } from './ipc/git'
 import { setupDialogHandlers } from './ipc/dialog'
+import { setupShellHandlers } from './ipc/shell'
 
 // 主窗口引用
 let mainWindow: BrowserWindow | null = null
@@ -44,6 +45,7 @@ app.whenReady().then(() => {
 	setupConfigHandlers()
 	setupGitHandlers()
 	setupDialogHandlers()
+	setupShellHandlers()
 
 	createWindow()
 
